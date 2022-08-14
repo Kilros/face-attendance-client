@@ -1,0 +1,134 @@
+<html>
+  <head>
+  <title>Điểm Danh</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/main.css') }}">
+
+    <script>
+    function toggle_display() {
+        var x = document.getElementById("video_can_show");
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "stop", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        if (x.style.display == "none") {
+            x.style.display = "block";    
+            var params = 'action=start';        
+        }
+        else {
+            x.style.display = "none";
+            var params = 'action=stop';
+        }
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                if(xhttp.responseText=="stop"){
+                    alert("Tắt thành công");
+                }
+                else{
+                  alert("Bật thành công")
+                }
+                
+            }
+        }
+        xhttp.send(params);
+      }
+      function train(){
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "train", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onreadystatechange = function() {
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                if(xhttp.responseText!="false"){
+                    alert("train thành công");
+                }
+            }
+        }
+        xhttp.send();
+      }
+      function change_mode(){
+            var mode=document.getElementById("mode").value;
+            const xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "mode", true);
+            xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhttp.onreadystatechange = function() {
+                if(xhttp.readyState == 4 && xhttp.status == 200) {
+                    if(xhttp.responseText!="false"){
+                        alert("Đổi chế độ thành công");
+                    }
+                }
+            }
+            xhttp.send('mode='+mode);
+      }
+    </script>
+  </head>
+  <body>
+    <img src="{{ url_for('static',filename='anh.jpg') }}"width="100%" height="auto" style="position: fixed; height:1000px; z-index: -1">
+    <div id="header">   
+      <div class="container-fluid" style="background-color:#E06F18 ;color:#fff; height:auto"> 
+        <a style="color:white; position:relative; font-family: Cambria; text-decoration: none; font-size:40px" href="#">HỆ THỐNG ĐIỂM DANH</a>
+        <a href="http://localhost/dacn/Admin" type="button" style="z-index: 1; float:right; height: 40px;line-height: 40px; width: 120px;text-align: center; margin: 10px; background: #000000; color:#E06F18; border: hidden; border-radius: 20px;">
+            ADMIN
+        </a>
+      </div>
+    </div>
+    <div id="content">
+        <div class="card shadow mb-4" style="min-height: 700px;">   
+            <div class="card-header py-3">
+                <h2 id="date" class="h2 mb-2 text-gray-800">{{date}}</h1>
+            </div>
+            <div style="width: 50%">
+                <select class="form-control" id="mode" name="mode">
+                    <option value="emt">-- Lựa Chọn Chế Độ --</option>    
+                    <option selected="selected" value="check_in">Điểm danh</option>
+                    <option value="check_out">Hoàn thành</option> 
+                </select>
+                <button style="position:absolute; top:80px; left:51%" onclick="change_mode()" class="btn btn-success">Chọn</button>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div id="video_can_show" style="display: block; margin: auto;">
+                            <img style="border-radius: 20px;" src="{{ url_for('video_feed') }}" width="100%">                        
+                        </div> 
+                        <div style="text-align: center; padding: 10px;">
+                          <button class="buttom" onclick="toggle_display()">Bật/Tắt Camera</button>
+                          <a href="/Capture" ><button class="buttom">Chụp ảnh</button></a>
+                          <button class="buttom" onclick="train()">Train</button>
+                        </div>
+                    </div>            
+                    <div class="col-sm-6">
+                        <h2 class="h2 mb-2 text-gray-800" style="text-align: center;">THÔNG TIN</h1>                            
+                        <div class="card shadow mb-4" style="padding: 25px;"> 
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">Họ và tên:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="fullname"></h4>
+                            </div>
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">MSSV:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="mssv"></h4>
+                            </div>
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">Thời gian điểm danh:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="in_time"></h4>                             
+                            </div> 
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">Thời gian hoàn thành:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="out_time"></h4>                             
+                            </div> 
+                            <div id="status" style="position: relative; width: 40%; margin: 10px auto; text-align: center;border-radius: 15px; height: 40px; line-height: 40px; font-size: 20px; background-color: red; color: white;">Trạng Thái</div> 
+                        </div>       
+                    </div>
+                </div>               
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        Coppyright
+    </div>  
+    <script src="{{ url_for('static',filename='js/main.js') }}"></script>      
+  </body>
+</html>

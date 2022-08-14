@@ -1,0 +1,137 @@
+<html>
+  <head>
+  <title>Điểm Danh</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/main.css') }}">
+
+    <script>
+      function capture(){
+        var id=document.getElementById("id").value;
+        var params = 'id='+id;
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "cap", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                if(xhttp.responseText!="false"){
+                    // alert("chụp thành công")
+                  // console.log(obj.length)
+                  // console.log(obj[obj.length-1]["fullname"])
+                }
+            }
+        }
+        xhttp.send(params);     
+      }
+      function getinfo(){
+        const fullname = document.getElementById("fullname");
+        const mssv = document.getElementById("mssv");
+        var id=document.getElementById("id").value;
+        var params = 'id='+id;
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "Getuser_id", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                if(xhttp.responseText!="false"){
+                    const obj = JSON.parse(xhttp.responseText);
+                    if(obj==""){
+                        fullname.innerHTML="Unknown";
+                        mssv.innerHTML="Unknown";
+                    }else{
+                        fullname.innerHTML = obj[0]["fullname"];
+                        mssv.innerHTML = obj[0]["mssv"];
+                        // getimg_id(id);
+                    }
+                }
+            }
+        }
+        xhttp.send(params);     
+      }
+      function getimg_id(id){
+        var img = document.getElementById('img');
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "getimg_id", true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhttp.readyState == 4 && xhttp.status == 200) {
+                if(xhttp.responseText!="false"){
+                    const obj = JSON.parse(xhttp.responseText);
+                    if(obj==""){ 
+                        var img_id = document.getElementsByClassName("img_id");
+                        img.removeChild(img_id);
+                    }else{
+                        obj.forEach(element => {
+                            console.log(element["thumbnail"]);
+                            url_img="http://localhost/dacn/"+element["thumbnail"];
+                            img.insertAdjacentHTML('beforeend', '<img class="img_id" style="width:200px" src="'+url_img+'">');
+                        });
+                        // console.log(obj[1]["thumbnail"]);
+                    }                        
+                }
+            }
+        }
+        xhttp.send('id='+id);     
+      }
+    </script>
+  </head>
+  <body>
+    <img src="{{ url_for('static',filename='anh.jpg') }}"width="100%" height="auto" style="position: fixed; height:1000px; z-index: -1">
+    <div id="header">   
+      <div class="container-fluid" style="background-color:#E06F18 ;color:#fff; height:auto"> 
+        <a style="color:white; position:relative; font-family: Cambria; text-decoration: none; font-size:40px" href="/#">HỆ THỐNG ĐIỂM DANH</a>
+        <a href="http://localhost/dacn/Admin" type="button" style="z-index: 1; float:right; height: 40px;line-height: 40px; width: 120px;text-align: center; margin: 10px; background: #000000; color:#E06F18; border: hidden; border-radius: 20px;">
+            ADMIN
+        </a>
+      </div>
+    </div>
+    <div id="content">
+        <div class="card shadow mb-4" style="min-height: 700px;">   
+            <div class="card-header py-3">
+                <!-- <h2 class="h2 mb-2 text-gray-800">CHỤP HÌNH</h1> -->
+                <h2 id="date" class="h2 mb-2 text-gray-800">{{date}}</h1>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div id="video_can_show" style="display: block; margin: auto;">
+                            <img style="border-radius: 20px;" src="{{ url_for('cap_video') }}" width="100%">                        
+                        </div> 
+                        <div style="text-align: center; padding: 10px;">
+                          <button class="buttom" onclick="capture()">Chụp ảnh</button>
+                        </div>
+                    </div>            
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="id">Nhập ID:</label>
+                            <input onchange="getinfo()" type="text" class="form-control" id="id" name="id">
+                        </div>
+                        <h2 class="h2 mb-2 text-gray-800" style="text-align: center;">THÔNG TIN</h1>                            
+                        <div class="card shadow mb-4" style="padding: 25px;"> 
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">Họ và tên:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="fullname"></h4>
+                            </div>
+                            <div>
+                                <h4 class="h4 mb-2 text-gray-800">MSSV:</h2>
+                                <h5 class="h5 mb-2 text-gray-800" id="mssv"></h4>
+                            </div>
+                        </div>       
+                    </div>
+                </div>               
+            </div>
+            <div id="img">
+
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        Coppyright
+    </div>  
+    <!-- <script src="{{ url_for('static',filename='js/main.js') }}"></script>       -->
+  </body>
+</html>
